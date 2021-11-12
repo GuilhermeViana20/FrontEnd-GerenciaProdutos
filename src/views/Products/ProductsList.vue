@@ -122,6 +122,9 @@
                             <button @click="$router.push('/produto/' + product.id)" class="btn btn-info btn-view">
                                 <i class="fa fa-eye"></i>
                             </button>
+                            <button @click="deleteProduct(product)" class="btn btn-danger btn-view">
+                                <i class="fa fa-close"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -199,7 +202,41 @@ export default {
             self.form.button.disable = true;
             self.loadTable = true;
             
-            axios.post(urlApi + 'products', data)
+            axios.post(urlApi + 'products/create', data)
+            .then(response => {
+                console.log(response)
+                self.cleanInputs();
+
+                self.showAlertSuccess = true;
+
+                setTimeout(function() {
+                    self.showAlertSuccess = false;
+                }, 3000);
+
+                self.getProducts();
+                self.loadTable = false;
+                self.form.button.disable = false;
+            })
+            .catch(function (error) {
+                console.log(error)
+                self.showAlertDanger = true;
+
+                setTimeout(function() {
+                    self.showAlertDanger = false;
+                }, 3000);
+
+                self.loadTable = false;
+                self.form.button.disable = false;
+            })
+        },
+
+        deleteProduct(product) {
+            var self = this;
+            
+            self.form.button.disable = true;
+            self.loadTable = true;
+
+            axios.delete(urlApi + 'products/delete/' + product.id)
             .then(response => {
                 console.log(response)
                 self.cleanInputs();
@@ -275,6 +312,7 @@ export default {
         right: 4%;
         top: 12%;
         box-shadow: 0 0 1em #ddd;
+        z-index: 99999;
     }
 
     .text-button {
