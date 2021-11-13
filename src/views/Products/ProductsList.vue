@@ -55,37 +55,37 @@
                     <div class="row">
 
                         <div class="col-sm-3 mb-3">
-                            <label for="tipo" class="form-label">{{ form.tipo.title }}</label>
+                            <label for="tipo" class="form-label">{{ form.tipo.title }} <span style="color: red">*</span></label>
                             <input v-model="form.tipo.value" type="text" class="form-control" id="tipo">
                         </div>
 
                         <div class="col-sm-3 mb-3">
-                            <label for="marca" class="form-label">{{ form.marca.title }}</label>
+                            <label for="marca" class="form-label">{{ form.marca.title }} <span style="color: red">*</span></label>
                             <input v-model="form.marca.value" type="text" class="form-control" id="marca">
                         </div>
 
                         <div class="col-sm-4 mb-3">
-                            <label for="nome" class="form-label">{{ form.nome.title }}</label>
+                            <label for="nome" class="form-label">{{ form.nome.title }} <span style="color: red">*</span></label>
                             <input v-model="form.nome.value" type="text" class="form-control" id="nome">
                         </div>
 
                         <div class="col-sm-2 mb-3">
-                            <label for="tamanho" class="form-label">{{ form.tamanho.title }}</label>
+                            <label for="tamanho" class="form-label">{{ form.tamanho.title }} <span style="color: red">*</span></label>
                             <input v-model="form.tamanho.value" type="number" class="form-control" id="tamanho">
                         </div>
 
                         <div class="col-sm-4 mb-3">
-                            <label for="genero" class="form-label">{{ form.genero.title }}</label>
+                            <label for="genero" class="form-label">{{ form.genero.title }} <span style="color: red">*</span></label>
                             <input v-model="form.genero.value" type="text" class="form-control" id="genero">
                         </div>
 
                         <div class="col-sm-4 mb-3">
-                            <label for="sku" class="form-label">{{ form.sku.title }}</label>
+                            <label for="sku" class="form-label">{{ form.sku.title }} <span style="color: red">*</span></label>
                             <input v-model="form.sku.value" type="text" class="form-control" id="sku">
                         </div>
 
                         <div class="col-sm-4 mb-3">
-                            <label for="quantidade" class="form-label">{{ form.quantidade_atual.title }}</label>
+                            <label for="quantidade" class="form-label">{{ form.quantidade_atual.title }} <span style="color: red">*</span></label>
                             <input v-model="form.quantidade_atual.value" type="number" class="form-control" id="quantidade">
                         </div>
 
@@ -118,7 +118,7 @@
 
                 <div v-if="loadTable" class="col-sm-12 text-center">
                     <div class="spinner-grow text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">Carregando...</span>
                     </div>
                 </div>
                 
@@ -230,17 +230,30 @@ export default {
             
             axios.post(urlApi + 'products/create', data)
             .then(response => {
-                self.cleanInputs();
+                if(response.data.sucesso === true)
+                {
+                    self.cleanInputs();
+                    self.showAlertSucesso = true;
+                    setTimeout(function() {
+                        self.showAlertSucesso = false;
+                    }, 3000);
 
-                self.showAlertSucesso = true;
-                setTimeout(function() {
-                    self.showAlertSucesso = false;
-                }, 3000);
+                    self.getProducts();
+                    self.loadTable = false;
+                    self.form.button.disable = false;
+                    self.response.message = response.data.mensagem;
+                } else {
+                    self.response.message = response.data.mensagem;
 
-                self.getProducts();
-                self.loadTable = false;
-                self.form.button.disable = false;
-                self.response.message = response.data.mensagem;
+                    self.showAlertErro = true;
+
+                    setTimeout(function() {
+                        self.showAlertErro = false;
+                    }, 3000);
+
+                    self.loadTable = false;
+                    self.form.button.disable = false;
+                }
             })
             .catch(function (error) {
                 self.showAlertErro = true;
